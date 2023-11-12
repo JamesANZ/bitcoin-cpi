@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bitcoin CPI</title>
+    <script src="https://cdn.jsdelivr.net/npm/superagent"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", async () => {
+
+            function formatDate(date) {
+                const yyyy = date.getFullYear();
+                let mm = date.getMonth() + 1; // Months start at 0!
+                let dd = date.getDate();
+
+                if (dd < 10) dd = '0' + dd;
+                if (mm < 10) mm = '0' + mm;
+
+                return dd + '-' + mm + '-' + yyyy;
+            }
+
+            try {
+                const today = formatDate(new Date())
+                const oneYearAgo = formatDate(today.setFullYear(today.getFullYear() - 1))
+                const { yearly_rate_pct, monthly_rate_pct } = await superagent.get('https://api.api-ninjas.com/v1/inflation?country=United States', {
+                    'X-Api-Key': 'dEWUYaMufvu+QsRIqtQKvw==ZSKse7zkswkcUTwo'
+                })
+                const { market_data: market_today} = await superagent.get(`https://api.coingecko.com/api/v3/coins/bitcoin/history?date=${today}`)
+                const { market_data: market_last_year} = await superagent.get(`https://api.coingecko.com/api/v3/coins/bitcoin/history?date=${oneYearAgo}`)
+                const btcPriceChange = (market_today.current_price.usd - market_last_year.current_price.usd) / market_last_year.current_price.usd
+                document.getElementById('result').innerText = `The yearly US CPI is ${yearly_rate_pct}%, bitcoin's price changed by ${btcPriceChange}%, the CPI in bitcoin terms is ${yearly_rate_pct - btcPriceChange}%`
+            } catch (e) {
+                alert(e)
+            }
+        });
+    </script>
+</head>
+<body>
+<div id='container'>
+    <h1 class="title">Bitcoin CPI</h1>
+    <p>This website converts the US CPI into bitcoin. For example, if US CPI inflation is 8% for 2023, and Bitcoin went up 10%, then the Bitcoin CPI would be -2%.</p>
+    <p id="result"></p>
+</div>
+</body>
+</html>
