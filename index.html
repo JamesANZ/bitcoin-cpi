@@ -1,365 +1,309 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bitcoin vs CPI Inflation Tracker</title>
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>₿</text></svg>">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 800px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .title {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-        }
-
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .results {
-            display: none;
-            gap: 30px;
-        }
-
-        .metric-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .metric-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .metric-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .metric-change {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-
-        .positive {
-            color: #2ecc71;
-        }
-
-        .negative {
-            color: #e74c3c;
-        }
-
-        .comparison {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            margin-top: 30px;
-        }
-
-        .error {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #ecf0f1;
-        }
-
-        .footer a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .footer a:hover {
-            color: #2980b9;
-        }
-
-        .data-source {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .title {
-                font-size: 2rem;
-            }
-            
-            .metric-value {
-                font-size: 2rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>₿</text></svg>"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
         <h1 class="title">₿ Bitcoin vs CPI Inflation</h1>
-        <p class="subtitle">Tracking the relationship between US inflation and Bitcoin's performance</p>
-        
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Loading latest data...</p>
+        <p class="subtitle">
+          Tracking the relationship between US inflation and Bitcoin's
+          performance
+        </p>
+      </header>
+
+      <section id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading latest data...</p>
+      </section>
+
+      <section id="results" class="results">
+        <article class="metric-card">
+          <h2 class="metric-title">US CPI Inflation (Annual)</h2>
+          <div class="metric-value" id="cpi-value">--</div>
+          <div class="metric-change" id="cpi-change">--</div>
+        </article>
+
+        <article class="metric-card">
+          <h2 class="metric-title">Bitcoin Price Change (Annual)</h2>
+          <div class="metric-value" id="btc-value">--</div>
+          <div class="metric-change" id="btc-change">--</div>
+        </article>
+
+        <article class="metric-card">
+          <h2 class="metric-title">Asset Price Inflation (Annual)</h2>
+          <div class="metric-value" id="asset-value">--</div>
+          <div class="metric-change" id="asset-change">--</div>
+        </article>
+
+        <article class="metric-card comparison">
+          <h2 class="metric-title">CPI in Bitcoin Terms</h2>
+          <div class="metric-value" id="comparison-value">--</div>
+          <div class="metric-change">
+            Inflation adjusted for Bitcoin appreciation
+          </div>
+        </article>
+
+        <article class="metric-card comparison">
+          <h2 class="metric-title">Bitcoin vs Asset Inflation</h2>
+          <div class="metric-value" id="btc-asset-comparison">--</div>
+          <div class="metric-change">
+            Bitcoin performance vs traditional assets
+          </div>
+        </article>
+      </section>
+
+      <section id="error" class="error" style="display: none">
+        <h3>Error Loading Data</h3>
+        <p id="error-message"></p>
+      </section>
+
+      <footer class="footer">
+        <a href="https://github.com/James-Sangalli/bitcoin-cpi" target="_blank"
+          >View on GitHub</a
+        >
+        <div class="data-source">
+          Data sources: FRED (Federal Reserve Economic Data), CoinGecko, & API
+          Ninjas<br />
+          <small
+            >Asset prices are estimated based on recent market
+            performance</small
+          >
         </div>
-        
-        <div id="results" class="results">
-            <div class="metric-card">
-                <div class="metric-title">US CPI Inflation (Annual)</div>
-                <div class="metric-value" id="cpi-value">--</div>
-                <div class="metric-change" id="cpi-change">--</div>
-            </div>
-            
-            <div class="metric-card">
-                <div class="metric-title">Bitcoin Price Change (Annual)</div>
-                <div class="metric-value" id="btc-value">--</div>
-                <div class="metric-change" id="btc-change">--</div>
-            </div>
-            
-            <div class="metric-card comparison">
-                <div class="metric-title">CPI in Bitcoin Terms</div>
-                <div class="metric-value" id="comparison-value">--</div>
-                <div class="metric-change">Inflation adjusted for Bitcoin appreciation</div>
-            </div>
-        </div>
-        
-        <div id="error" class="error" style="display: none;">
-            <h3>Error Loading Data</h3>
-            <p id="error-message"></p>
-        </div>
-        
-        <div class="footer">
-            <a href="https://github.com/James-Sangalli/bitcoin-cpi" target="_blank">View on GitHub</a>
-            <div class="data-source">
-                Data sources: FRED (Federal Reserve Economic Data) & CoinGecko
-            </div>
-        </div>
-    </div>
+      </footer>
+    </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const loading = document.getElementById('loading');
-            const results = document.getElementById('results');
-            const error = document.getElementById('error');
-            const errorMessage = document.getElementById('error-message');
+      document.addEventListener("DOMContentLoaded", async () => {
+        const loading = document.getElementById("loading");
+        const results = document.getElementById("results");
+        const error = document.getElementById("error");
+        const errorMessage = document.getElementById("error-message");
 
-            function formatNumber(num) {
-                return new Intl.NumberFormat('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }).format(num);
-            }
+        function formatNumber(num) {
+          return new Intl.NumberFormat("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(num);
+        }
 
-            function formatCurrency(amount) {
-                return new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                }).format(amount);
-            }
+        function formatCurrency(amount) {
+          return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(amount);
+        }
 
-            function showError(message) {
-                loading.style.display = 'none';
-                error.style.display = 'block';
-                errorMessage.textContent = message;
-            }
+        function showError(message) {
+          loading.style.display = "none";
+          error.style.display = "block";
+          errorMessage.textContent = message;
+        }
 
-            function showResults() {
-                loading.style.display = 'none';
-                results.style.display = 'flex';
-                error.style.display = 'none';
-            }
+        function showResults() {
+          loading.style.display = "none";
+          results.style.display = "flex";
+          error.style.display = "none";
+        }
 
-            async function fetchCPIData() {
-                try {
-                    // Try multiple sources for CPI data
-                    const sources = [
-                        'https://api.api-ninjas.com/v1/inflation?country=United States',
-                        'https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL&api_key=demo&file_type=json&sort_order=desc&limit=24'
-                    ];
+        async function fetchCPIData() {
+          try {
+            // Try multiple sources for CPI data
+            const sources = [
+              "https://api.api-ninjas.com/v1/inflation?country=United States",
+              "https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL&api_key=demo&file_type=json&sort_order=desc&limit=24",
+            ];
 
-                    for (const source of sources) {
-                        try {
-                            if (source.includes('api-ninjas')) {
-                                const response = await fetch(source, {
-                                    headers: {
-                                        'X-Api-Key': 'dEWUYaMufvu+QsRIqtQKvw==ZSKse7zkswkcUTwo'
-                                    }
-                                });
-                                
-                                if (response.ok) {
-                                    const data = await response.json();
-                                    if (data && data.length > 0) {
-                                        return {
-                                            current: parseFloat(data[0].yearly_rate_pct),
-                                            previous: parseFloat(data[0].yearly_rate_pct) - 0.5 // Estimate
-                                        };
-                                    }
-                                }
-                            } else if (source.includes('stlouisfed')) {
-                                const response = await fetch(source);
-                                if (response.ok) {
-                                    const data = await response.json();
-                                    if (data && data.observations && data.observations.length >= 12) {
-                                        const current = parseFloat(data.observations[0].value);
-                                        const previous = parseFloat(data.observations[12].value);
-                                        const currentCPI = ((current - previous) / previous) * 100;
-                                        return {
-                                            current: currentCPI,
-                                            previous: currentCPI - 1.5 // Estimate
-                                        };
-                                    }
-                                }
-                            }
-                        } catch (e) {
-                            console.log(`Failed to fetch from ${source}:`, e);
-                            continue;
-                        }
-                    }
+            for (const source of sources) {
+              try {
+                if (source.includes("api-ninjas")) {
+                  const response = await fetch(source, {
+                    headers: {
+                      "X-Api-Key": "dEWUYaMufvu+QsRIqtQKvw==ZSKse7zkswkcUTwo",
+                    },
+                  });
 
-                    // Fallback to estimated data if all APIs fail
-                    return {
-                        current: 3.1,
-                        previous: 6.5
-                    };
-                } catch (e) {
-                    console.error('Error fetching CPI data:', e);
-                    return {
-                        current: 3.1,
-                        previous: 6.5
-                    };
-                }
-            }
-
-            async function fetchBitcoinData() {
-                try {
-                    const response = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365&interval=daily');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch Bitcoin data');
-                    }
-                    
+                  if (response.ok) {
                     const data = await response.json();
-                    const prices = data.prices;
-                    
-                    if (!prices || prices.length < 2) {
-                        throw new Error('Insufficient Bitcoin price data');
+                    if (data && data.length > 0) {
+                      return {
+                        current: parseFloat(data[0].yearly_rate_pct),
+                        previous: parseFloat(data[0].yearly_rate_pct) - 0.5, // Estimate
+                      };
                     }
-
-                    const currentPrice = prices[prices.length - 1][1];
-                    const oneYearAgoPrice = prices[0][1];
-                    const priceChange = ((currentPrice - oneYearAgoPrice) / oneYearAgoPrice) * 100;
-
-                    return {
-                        currentPrice,
-                        oneYearAgoPrice,
-                        priceChange
-                    };
-                } catch (e) {
-                    console.error('Error fetching Bitcoin data:', e);
-                    throw e;
+                  }
+                } else if (source.includes("stlouisfed")) {
+                  const response = await fetch(source);
+                  if (response.ok) {
+                    const data = await response.json();
+                    if (
+                      data &&
+                      data.observations &&
+                      data.observations.length >= 12
+                    ) {
+                      const current = parseFloat(data.observations[0].value);
+                      const previous = parseFloat(data.observations[12].value);
+                      const currentCPI =
+                        ((current - previous) / previous) * 100;
+                      return {
+                        current: currentCPI,
+                        previous: currentCPI - 1.5, // Estimate
+                      };
+                    }
+                  }
                 }
+              } catch (e) {
+                console.log(`Failed to fetch from ${source}:`, e);
+                continue;
+              }
             }
 
-            try {
-                // Fetch both CPI and Bitcoin data concurrently
-                const [cpiData, btcData] = await Promise.all([
-                    fetchCPIData(),
-                    fetchBitcoinData()
-                ]);
+            // Fallback to estimated data if all APIs fail
+            return {
+              current: 3.1,
+              previous: 6.5,
+            };
+          } catch (e) {
+            console.error("Error fetching CPI data:", e);
+            return {
+              current: 3.1,
+              previous: 6.5,
+            };
+          }
+        }
 
-                const cpiChange = cpiData.current - cpiData.previous;
-                const cpiInBitcoinTerms = cpiData.current - btcData.priceChange;
-
-                // Update the UI
-                document.getElementById('cpi-value').textContent = `${formatNumber(cpiData.current)}%`;
-                document.getElementById('cpi-change').textContent = `${cpiChange > 0 ? '+' : ''}${formatNumber(cpiChange)}% from last year`;
-                document.getElementById('cpi-change').className = `metric-change ${cpiChange > 0 ? 'positive' : 'negative'}`;
-
-                document.getElementById('btc-value').textContent = `${formatNumber(btcData.priceChange)}%`;
-                document.getElementById('btc-change').textContent = `${formatCurrency(btcData.oneYearAgoPrice)} → ${formatCurrency(btcData.currentPrice)}`;
-                document.getElementById('btc-change').className = `metric-change ${btcData.priceChange > 0 ? 'positive' : 'negative'}`;
-
-                document.getElementById('comparison-value').textContent = `${formatNumber(cpiInBitcoinTerms)}%`;
-                document.getElementById('comparison-value').className = `metric-value ${cpiInBitcoinTerms > 0 ? 'positive' : 'negative'}`;
-
-                showResults();
-
-            } catch (err) {
-                console.error('Error:', err);
-                showError(`Failed to load data: ${err.message}. Please try again later.`);
+        async function fetchBitcoinData() {
+          try {
+            const response = await fetch(
+              "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365&interval=daily",
+            );
+            if (!response.ok) {
+              throw new Error("Failed to fetch Bitcoin data");
             }
-        });
+
+            const data = await response.json();
+            const prices = data.prices;
+
+            if (!prices || prices.length < 2) {
+              throw new Error("Insufficient Bitcoin price data");
+            }
+
+            const currentPrice = prices[prices.length - 1][1];
+            const oneYearAgoPrice = prices[0][1];
+            const priceChange =
+              ((currentPrice - oneYearAgoPrice) / oneYearAgoPrice) * 100;
+
+            return {
+              currentPrice,
+              oneYearAgoPrice,
+              priceChange,
+            };
+          } catch (e) {
+            console.error("Error fetching Bitcoin data:", e);
+            throw e;
+          }
+        }
+
+        async function fetchAssetData() {
+          try {
+            // For now, we'll use estimated data based on recent market performance
+            // In a production environment, you'd want to use paid APIs or official data sources
+
+            // S&P 500: Using estimated annual return based on recent performance
+            const sp500Change = 12.5; // Estimated annual return for S&P 500
+
+            // Real Estate: Using estimated Case-Shiller data
+            const realEstateChange = 5.2; // Estimated annual change for US housing
+
+            // Gold: Using estimated annual return
+            const goldChange = 8.1; // Estimated annual return for gold
+
+            // Calculate weighted average (S&P 500: 60%, Real Estate: 30%, Gold: 10%)
+            const weightedAssetInflation =
+              sp500Change * 0.6 + realEstateChange * 0.3 + goldChange * 0.1;
+
+            return {
+              sp500Change,
+              realEstateChange,
+              goldChange,
+              weightedAssetInflation,
+            };
+          } catch (e) {
+            console.error("Error fetching asset data:", e);
+            // Fallback to estimated data
+            return {
+              sp500Change: 12.5,
+              realEstateChange: 5.2,
+              goldChange: 8.1,
+              weightedAssetInflation: 10.2,
+            };
+          }
+        }
+
+        try {
+          // Fetch CPI, Bitcoin, and Asset data concurrently
+          const [cpiData, btcData, assetData] = await Promise.all([
+            fetchCPIData(),
+            fetchBitcoinData(),
+            fetchAssetData(),
+          ]);
+
+          const cpiChange = cpiData.current - cpiData.previous;
+          const cpiInBitcoinTerms = cpiData.current - btcData.priceChange;
+          const btcVsAssetComparison =
+            btcData.priceChange - assetData.weightedAssetInflation;
+
+          // Update the UI
+          document.getElementById("cpi-value").textContent =
+            `${formatNumber(cpiData.current)}%`;
+          document.getElementById("cpi-change").textContent =
+            `${cpiChange > 0 ? "+" : ""}${formatNumber(cpiChange)}% from last year`;
+          document.getElementById("cpi-change").className =
+            `metric-change ${cpiChange > 0 ? "positive" : "negative"}`;
+
+          document.getElementById("btc-value").textContent =
+            `${formatNumber(btcData.priceChange)}%`;
+          document.getElementById("btc-change").textContent =
+            `${formatCurrency(btcData.oneYearAgoPrice)} → ${formatCurrency(btcData.currentPrice)}`;
+          document.getElementById("btc-change").className =
+            `metric-change ${btcData.priceChange > 0 ? "positive" : "negative"}`;
+
+          document.getElementById("asset-value").textContent =
+            `${formatNumber(assetData.weightedAssetInflation)}%`;
+          document.getElementById("asset-change").textContent =
+            `S&P 500: ${formatNumber(assetData.sp500Change)}% | Real Estate: ${formatNumber(assetData.realEstateChange)}% | Gold: ${formatNumber(assetData.goldChange)}% (estimated)`;
+          document.getElementById("asset-change").className =
+            `metric-change ${assetData.weightedAssetInflation > 0 ? "positive" : "negative"}`;
+
+          document.getElementById("comparison-value").textContent =
+            `${formatNumber(cpiInBitcoinTerms)}%`;
+          document.getElementById("comparison-value").className =
+            `metric-value ${cpiInBitcoinTerms > 0 ? "positive" : "negative"}`;
+
+          document.getElementById("btc-asset-comparison").textContent =
+            `${formatNumber(btcVsAssetComparison)}%`;
+          document.getElementById("btc-asset-comparison").className =
+            `metric-value ${btcVsAssetComparison > 0 ? "positive" : "negative"}`;
+
+          showResults();
+        } catch (err) {
+          console.error("Error:", err);
+          showError(
+            `Failed to load data: ${err.message}. Please try again later.`,
+          );
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
