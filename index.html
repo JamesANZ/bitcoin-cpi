@@ -14,7 +14,7 @@
   <body>
     <main class="container">
       <header>
-        <h1 class="title">₿ Bitcoin vs CPI Inflation</h1>
+        <h1 class="title">₿ Bitcoin vs Inflation</h1>
         <p class="subtitle">
           Tracking the relationship between US inflation and Bitcoin's
           performance
@@ -46,10 +46,10 @@
         </article>
 
         <article class="metric-card comparison">
-          <h2 class="metric-title">CPI in Bitcoin Terms</h2>
+          <h2 class="metric-title">Bitcoin vs CPI</h2>
           <div class="metric-value" id="comparison-value">--</div>
           <div class="metric-change">
-            Inflation adjusted for Bitcoin appreciation
+            Bitcoin performance vs consumer inflation
           </div>
         </article>
 
@@ -260,7 +260,7 @@
           ]);
 
           const cpiChange = cpiData.current - cpiData.previous;
-          const cpiInBitcoinTerms = cpiData.current - btcData.priceChange;
+          const btcVsCpiComparison = btcData.priceChange - cpiData.current;
           const btcVsAssetComparison =
             btcData.priceChange - assetData.weightedAssetInflation;
 
@@ -287,9 +287,9 @@
             `metric-change ${assetData.weightedAssetInflation > 0 ? "positive" : "negative"}`;
 
           document.getElementById("comparison-value").textContent =
-            `${formatNumber(cpiInBitcoinTerms)}%`;
+            `${formatNumber(btcVsCpiComparison)}%`;
           document.getElementById("comparison-value").className =
-            `metric-value ${cpiInBitcoinTerms > 0 ? "positive" : "negative"}`;
+            `metric-value ${btcVsCpiComparison > 0 ? "positive" : "negative"}`;
 
           document.getElementById("btc-asset-comparison").textContent =
             `${formatNumber(btcVsAssetComparison)}%`;
